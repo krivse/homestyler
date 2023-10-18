@@ -21,15 +21,15 @@ if (process.env.BOT_TOKEN) {
 bot.on('message', async msg => {
   // Handle all other messages with content_type 'text' (content_types defaults to ['text'])
   if (msg.text == '/start'){
-    await bot.sendMessage(msg.chat.id, 'Через пробел передайте координаты: X, Y, название или артикул объекта.')
+    await bot.sendMessage(msg.chat.id, 'Через пробел передайте номер "id" меняемого объекта и название или артикул нового объекта.')
   }
   else {
     let validate_data = validate(msg.text)
     if (validate_data[0] == 400) {
       await bot.sendMessage(msg.chat.id, validate_data[1])
     } else {
-      logger.info(`log:: x: ${validate_data[1]}, y: ${validate_data[2]}, name: ${validate_data[3]}`)
-      let answer = await p_homestyler(validate_data[1], validate_data[2], validate_data[3])
+      logger.info(`log:: num: ${validate_data[1]}, name: ${validate_data[2]}`)
+      let answer = await p_homestyler(validate_data[1], validate_data[2])
       if (answer[0] == 200) {
         await bot.sendPhoto(msg.chat.id, answer[2], {caption: answer[1]})  
         fs.unlink(answer[2], () => {})

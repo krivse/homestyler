@@ -9,6 +9,7 @@ import logger from '././logger.js';
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename);
 const imageDownload = path.resolve(__dirname, 'media')
@@ -16,7 +17,7 @@ puppeteer.use(RecaptchaPlugin()).use(StealthPlugin())
 dotenv.config({path: path.resolve(__dirname, '..') + "/.env"})
 
 
-export async function p_homestyler(x, y, name) {
+export async function p_homestyler(image_id, name) {
   // Launch the browser and open a new blank page
 
   const browser = await puppeteer.launch({
@@ -63,7 +64,7 @@ export async function p_homestyler(x, y, name) {
 
   // BLOCK 3D EDITOR
   try {
-    const error = await editor3D(page, x, y, name)
+    const error = await editor3D(page, image_id, name)
     if (error[0] === 400) {
       await browser.close()
       logger.error(error[1])
@@ -140,34 +141,23 @@ async function project_selector(page) {
 }
 
 
-async function editor3D(page, x, y, name) {
+async function editor3D(page, num, name) {
   // Select plane 2D
   const plane_xpath = "/html/body/div[3]/div[55]/div/div[1]/div[3]/div/ul/li[1]/ul/li[1]/div[2]"
   await page.waitForXPath(plane_xpath, {timeout: 60000}).then(
     (plane_2D) => plane_2D.evaluate(plane => plane.click())
   )
   logger.info("Select plane 2D")
-  await page.waitForTimeout(30000)
   
-  let i_xy_coord = await page.waitForSelector('[id^=image]', {timeout: 60000}).then(() => page.$$eval('image', element => element.map(
-    element => [
-      Number(element.getAttribute('x').split('.')[0]),
-      Number(element.getAttribute('y').split('.')[0])
-    ]
-    ))
-    ).then(
-      (x_c) => x_c.findIndex((element) => element[0] === Number(x) && element[1] === Number(y))
+  try {
+    await page.waitForSelector(`#image${num}`, {timeout: 60000}).then(
+      (image) => image.click()
     )
-
-  if (i_xy_coord !== -1) {
-    logger.info("Coordinators find")
-    await image[i_xy_coord].click()
     logger.info("Object select")
-  } else {
-    return [400, 'Переданы неверные координаты "X" , "Y"']
+  } catch (err) {
+    logger.error(err.message)
+    return [400, 'Передано неверное название объекта']
   }
-  logger.info('Object select')
-  await page.waitForTimeout(30000)
   // Enter replace
   await page.waitForSelector(".hs-left-item:nth-child(1)", {timeout: 15000}).then(
     () => page.click('.hs-left-item:nth-child(1)')
