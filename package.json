@@ -1,0 +1,23 @@
+{
+  "name": "homestyler",
+  "version": "1.0.0",
+  "main": "bot.js",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "adm-zip": "^0.5.10",
+    "axios": "^1.5.1",
+    "dotenv": "^16.3.1",
+    "glob": "^10.3.10",
+    "node-telegram-bot-api": "^0.63.0",
+    "pino": "^8.16.0",
+    "puppeteer": "^21.3.8",
+    "puppeteer-core": "21.3.8",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-recaptcha": "^3.6.8",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "scripts": {
+    "start": "node bot.js"
+  }
+}
